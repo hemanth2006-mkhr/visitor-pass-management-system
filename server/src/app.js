@@ -14,7 +14,28 @@ import activityLogRoutes from "./routes/activityLog.routes.js";
 
 const app = express();
 
-app.use(cors());
+// Define allowed origins
+const allowedOrigins = [
+  'https://visitor-pass-management-system-gold.vercel.app', // Replace with your exact Vercel frontend URL
+  'http://localhost:5173',               // Vite dev server default
+  'http://localhost:3000'                // CRA / Next.js dev server default
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS policy: Access denied for this origin.'));
+    }
+  },
+  credentials: true, // Enable if sending cookies, authorization headers, or sessions
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.json());
 
